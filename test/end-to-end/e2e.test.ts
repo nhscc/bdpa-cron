@@ -9,12 +9,14 @@
 import { toAbsolutePath, toDirname } from '@-xun/fs';
 import { createDebugLogger } from 'rejoinder';
 
-import { exports as packageExports, name as packageName } from 'rootverse:package.json';
+import packageJson from 'rootverse:package.json' with { type: 'json' };
 
 import {
   ensurePackageHasBeenBuilt,
   reconfigureJestGlobalsToSkipTestsInThisFileIfRequested
 } from 'testverse:util.ts';
+
+const { exports: packageExports, name: packageName } = packageJson;
 
 const TEST_IDENTIFIER = `${packageName.split('/').at(-1)!}-e2e`;
 const debug = createDebugLogger({ namespace: 'bdpa-cron' }).extend(TEST_IDENTIFIER);
