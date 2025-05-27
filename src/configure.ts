@@ -1,3 +1,5 @@
+import { checkArrayNotEmpty } from '@-xun/cli';
+
 import {
   makeStandardConfigureErrorHandlingEpilogue,
   makeStandardConfigureExecutionContext
@@ -5,7 +7,13 @@ import {
 
 import { createDebugLogger, createGenericLogger } from 'rejoinder';
 
-import { globalDebuggerNamespace, globalLoggerNamespace } from 'universe:constant.ts';
+import {
+  allActualTargets,
+  globalDebuggerNamespace,
+  globalLoggerNamespace,
+  Target,
+  targets
+} from 'universe:constant.ts';
 
 import type {
   BfeBuilderObject,
@@ -17,8 +25,6 @@ import type {
   StandardCommonCliArguments,
   StandardExecutionContext
 } from '@-xun/cli/extensions';
-
-import type { EmptyObject } from 'type-fest';
 
 import type {
   // ? Used in documentation
@@ -44,7 +50,9 @@ export type GlobalExecutionContext = StandardExecutionContext /* & {
  *
  * @see {@link StandardCommonCliArguments}
  */
-export type GlobalCliArguments = StandardCommonCliArguments /* & { ... } */;
+export type GlobalCliArguments = StandardCommonCliArguments & {
+  targets: Target[];
+};
 
 /**
  * This {@link BfeBuilderObject} instance describes the CLI arguments available
@@ -64,10 +72,32 @@ export type GlobalCliArguments = StandardCommonCliArguments /* & { ... } */;
  *
  * @see {@link StandardCommonCliArguments}
  */
-export const globalCliArguments = {} as EmptyObject satisfies BfeBuilderObject<
-  Record<string, unknown>,
-  StandardExecutionContext
->;
+export const globalCliArguments = {
+  targets: {
+    alias: 'target',
+    array: true,
+    choices: targets,
+    default: allActualTargets,
+    check: checkArrayNotEmpty('--targets'),
+    coerce(targets: Target | Target[]) {
+      return Array.from(
+        new Set(
+          [targets].flat().flatMap((target) => {
+            switch (target) {
+              case Target.All: {
+                return allActualTargets;
+              }
+
+              default: {
+                return target;
+              }
+            }
+          })
+        )
+      );
+    }
+  }
+} satisfies BfeBuilderObject<Record<string, unknown>, StandardExecutionContext>;
 
 export const configureExecutionContext = async function (context) {
   const standardContextFactory = await makeStandardConfigureExecutionContext({
