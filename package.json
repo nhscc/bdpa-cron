@@ -1,5 +1,5 @@
 {
-  "name": "bdpa-cron",
+  "name": "@nhscc/bdpa-cron",
   "version": "1.0.0",
   "private": true,
   "homepage": "https://github.com/nhscc/bdpa-cron#readme",
