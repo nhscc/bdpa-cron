@@ -1,3 +1,7 @@
+import { homedir } from 'node:os';
+
+import { toAbsolutePath } from '@-xun/fs';
+
 /**
  * The name of the command line interface.
  */
@@ -12,6 +16,11 @@ export const globalLoggerNamespace = globalCliName;
  * The CLI-wide namespace that appears in debugger output.
  */
 export const globalDebuggerNamespace = globalCliName;
+
+/**
+ * Where the current user's configuration file can be found if it exists.
+ */
+export const configFile = toAbsolutePath(homedir(), '.config', 'nhscc-bdpa-cron.json');
 
 /**
  * The HSCC MongoDB Atlas APIs organized by problem statement name.

@@ -1,7 +1,7 @@
 import { checkArrayNotEmpty, CommandNotImplementedError } from '@-xun/cli';
 import { scriptBasename } from '@-xun/cli/util';
 
-import { globalCliName } from 'universe:constant.ts';
+import { configFile, globalCliName } from 'universe:constant.ts';
 import { withGlobalBuilder, withGlobalUsage } from 'universe:util.ts';
 
 import type { AsStrictExecutionContext, RootConfiguration } from '@-xun/cli';
@@ -67,7 +67,13 @@ export default function command({
     name: globalCliName,
     builder,
     description: "A CLI tool for keeping HSCC's Mongo Atlas clusters alive and healthy",
-    usage: withGlobalUsage({ includeSubCommand: true }),
+    usage: withGlobalUsage(
+      `$1.
+
+Configuration file location: ${configFile}
+`,
+      { includeSubCommand: true, appendPeriod: false }
+    ),
     handler: withGlobalHandler(function ({
       $0: scriptFullName,
       hush: isHushed,
