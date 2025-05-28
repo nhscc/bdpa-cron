@@ -1,26 +1,24 @@
 import { CommandNotImplementedError } from '@-xun/cli';
 import { scriptBasename } from '@-xun/cli/util';
 
-import { globalCliName } from 'universe:constant.ts';
 import { withGlobalBuilder, withGlobalUsage } from 'universe:util.ts';
 
-import type { AsStrictExecutionContext, RootConfiguration } from '@-xun/cli';
+import type { AsStrictExecutionContext, ChildConfiguration } from '@-xun/cli';
 import type { GlobalCliArguments, GlobalExecutionContext } from 'universe:configure.ts';
 
 export type CustomCliArguments = GlobalCliArguments;
 
 export default function command({
   standardDebug
-}: AsStrictExecutionContext<GlobalExecutionContext>): RootConfiguration<
+}: AsStrictExecutionContext<GlobalExecutionContext>): ChildConfiguration<
   CustomCliArguments,
   GlobalExecutionContext
 > {
   const [builder, withGlobalHandler] = withGlobalBuilder<CustomCliArguments>();
 
   return {
-    name: globalCliName,
     builder,
-    description: "A CLI tool for keeping HSCC's Mongo Atlas clusters alive and healthy",
+    description: 'Show aggregate usage statistics across clusters',
     usage: withGlobalUsage(),
     handler: withGlobalHandler(function ({
       $0: scriptFullName,

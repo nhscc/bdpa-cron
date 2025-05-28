@@ -8,10 +8,10 @@ import type { AsStrictExecutionContext, RootConfiguration } from '@-xun/cli';
 import type { GlobalCliArguments, GlobalExecutionContext } from 'universe:configure.ts';
 
 export enum Task {
-  InitializeData = 'initialize-data',
-  BanHammer = 'ban-hammer',
-  PruneData = 'prune-data',
-  SimulateActivity = 'simulate-activity',
+  InitializeData = 'initialize',
+  BanHammer = 'ban',
+  PruneData = 'prune',
+  SimulateActivity = 'simulate',
   All = 'all'
 }
 
@@ -39,6 +39,7 @@ export default function command({
         array: true,
         choices: tasks,
         default: allActualTasks,
+        defaultDescription: Task.All,
         check: checkArrayNotEmpty('--tasks'),
         coerce(tasks: Task | Task[]) {
           return Array.from(
@@ -66,7 +67,7 @@ export default function command({
     name: globalCliName,
     builder,
     description: "A CLI tool for keeping HSCC's Mongo Atlas clusters alive and healthy",
-    usage: withGlobalUsage(),
+    usage: withGlobalUsage({ includeSubCommand: true }),
     handler: withGlobalHandler(function ({
       $0: scriptFullName,
       hush: isHushed,

@@ -8,11 +8,13 @@ import {
 import { createDebugLogger, createGenericLogger } from 'rejoinder';
 
 import {
-  allActualTargets,
+  allActualTargetProblems,
+  allInputTargets,
   globalDebuggerNamespace,
   globalLoggerNamespace,
-  Target,
-  targets
+  TargetDatabase,
+  TargetProblem,
+  TargetYear
 } from 'universe:constant.ts';
 
 import type {
@@ -25,6 +27,8 @@ import type {
   StandardCommonCliArguments,
   StandardExecutionContext
 } from '@-xun/cli/extensions';
+
+import type { Arrayable } from 'type-fest';
 
 import type {
   // ? Used in documentation
@@ -51,7 +55,7 @@ export type GlobalExecutionContext = StandardExecutionContext /* & {
  * @see {@link StandardCommonCliArguments}
  */
 export type GlobalCliArguments = StandardCommonCliArguments & {
-  targets: Target[];
+  targets: TargetProblem[];
 };
 
 /**
@@ -76,22 +80,27 @@ export const globalCliArguments = {
   targets: {
     alias: 'target',
     array: true,
-    choices: targets,
-    default: allActualTargets,
+    choices: allInputTargets,
+    default: allActualTargetProblems,
+    defaultDescription: TargetProblem.All,
     check: checkArrayNotEmpty('--targets'),
-    coerce(targets: Target | Target[]) {
+    coerce(targets: Arrayable<(typeof allInputTargets)[number]>) {
       return Array.from(
         new Set(
           [targets].flat().flatMap((target) => {
-            switch (target) {
-              case Target.All: {
-                return allActualTargets;
-              }
-
-              default: {
-                return target;
-              }
+            if (target === TargetProblem.All) {
+              return allActualTargetProblems;
             }
+
+            if (target in TargetYear) {
+              return TargetYear[target as keyof TargetYear];
+            }
+
+            if (target in TargetDatabase) {
+              return TargetDatabase[target as keyof TargetDatabase];
+            }
+
+            return target;
           })
         )
       );
