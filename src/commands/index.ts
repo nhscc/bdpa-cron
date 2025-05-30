@@ -183,10 +183,10 @@ ${SHORT_TAB}${await getWellKnownConfigPath()}
               queued = true;
               subTasks.push(
                 withStandardListrTaskConfig({
-                  initialTitle: 'Executing task "initialize data"...',
+                  initialTitle: 'Executing task "initialize data" (no-op)...',
                   async task({ listrTask }) {
                     await runInitializeData(target, getConfig, taskRunnerContext);
-                    listrTask.title = 'Finished task "initialize data"';
+                    listrTask.title = 'Finished task "initialize data" (no-op)';
                   }
                 })
               );
@@ -196,10 +196,10 @@ ${SHORT_TAB}${await getWellKnownConfigPath()}
               queued = true;
               subTasks.push(
                 withStandardListrTaskConfig({
-                  initialTitle: 'Executing task "simulate activity"...',
+                  initialTitle: 'Executing task "simulate activity" (no-op)...',
                   async task({ listrTask }) {
                     await runSimulateActivity(target, getConfig, taskRunnerContext);
-                    listrTask.title = 'Finished task "simulate activity"';
+                    listrTask.title = 'Finished task "simulate activity" (no-op)';
                   }
                 })
               );
@@ -237,9 +237,12 @@ ${SHORT_TAB}${await getWellKnownConfigPath()}
         })
       ]);
 
-      await taskManager.runAll();
+      try {
+        await taskManager.runAll();
+      } finally {
+        standardLog.newline([LogTag.IF_NOT_SILENCED]);
+      }
 
-      standardLog.newline([LogTag.IF_NOT_SILENCED]);
       standardLog([LogTag.IF_NOT_SILENCED], standardSuccessMessage);
     })
   };

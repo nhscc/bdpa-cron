@@ -1,6 +1,9 @@
+import { isNativeError } from 'node:util/types';
+
 import { $executionContext } from '@-xun/cli';
 import { withStandardBuilder, withStandardUsage } from '@-xun/cli/extensions';
 import { LogTag } from '@-xun/cli/logging';
+import { toSentenceCase } from '@-xun/cli/util';
 import { createListrTaskLogger } from 'rejoinder-listr2';
 
 import { globalCliArguments } from 'universe:configure.ts';
@@ -81,12 +84,19 @@ export function withStandardListrTaskConfigFactory<
           task: thisTask
         });
 
-        return task({
-          ...initialTaskRunnerContext,
-          listrContext,
-          listrTask: thisTask,
-          listrLog: taskLog
-        });
+        try {
+          return await task({
+            ...initialTaskRunnerContext,
+            listrContext,
+            listrTask: thisTask,
+            listrLog: taskLog
+          });
+        } catch (error) {
+          throw new Error(
+            toSentenceCase(isNativeError(error) ? error.message : String(error)),
+            isNativeError(error) && error.cause ? { cause: error.cause } : {}
+          );
+        }
       }
     } as ListrTaskLiteral;
   };
