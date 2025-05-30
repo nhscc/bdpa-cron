@@ -112,7 +112,8 @@ ${allActualTargetProblems
   )
   .join('\n')}
 
-::Configuration file location::
+::Configuration File Location::
+
 ${SHORT_TAB}${await getWellKnownConfigPath()}
 `,
       { includeSubCommand: true, appendPeriod: false }
