@@ -178,19 +178,19 @@ export const configureExecutionContext = async function (context) {
   function getConfig(
     key: string,
     validator: LiteralUnion<Parameters<GlobalExecutionContext['getConfig']>[1], string>,
+    fullKey: string = key,
     currentConfig: unknown = config
   ) {
     const [firstKey, ...remainingKeys] = key.split('.');
-    currentConfig =
-      firstKey &&
-      currentConfig &&
-      typeof currentConfig === 'object' &&
-      firstKey in currentConfig
-        ? currentConfig[firstKey as keyof typeof currentConfig]
-        : currentConfig;
+    const currentConfigWasAPlainObject = isPlainObject(currentConfig);
 
-    if (remainingKeys.length) {
-      return getConfig(remainingKeys.join('.'), validator, currentConfig);
+    currentConfig =
+      firstKey && isPlainObject(currentConfig) && firstKey in currentConfig
+        ? currentConfig[firstKey as keyof typeof currentConfig]
+        : undefined;
+
+    if (currentConfigWasAPlainObject && remainingKeys.length) {
+      return getConfig(remainingKeys.join('.'), validator, fullKey, currentConfig);
     }
 
     if (typeof validator === 'function') {
@@ -199,32 +199,71 @@ export const configureExecutionContext = async function (context) {
       if (isValid !== true) {
         throw new CliError(
           ErrorMessage.InvalidConfigFile(
-            firstKey!,
+            fullKey,
             configPath,
             typeof isValid === 'string' ? isValid : undefined
           )
         );
       }
-    } else if (
-      (validator === 'boolean' && typeof currentConfig !== 'boolean') ||
-      (validator === 'null' && currentConfig !== null) ||
-      (validator === 'number' && typeof currentConfig !== 'number') ||
-      (validator === 'string' && typeof currentConfig !== 'string')
-    ) {
-      throw new CliError(
-        ErrorMessage.InvalidConfigFile(
-          firstKey!,
-          configPath,
-          `expected value to be of type "${validator}"; saw instead: "${typeof currentConfig}"`
-        )
-      );
     } else {
-      throw new CliError(ErrorMessage.GuruMeditation());
+      let errored = false;
+
+      switch (validator) {
+        case 'boolean': {
+          if (typeof currentConfig !== 'boolean') {
+            errored = true;
+          }
+
+          break;
+        }
+
+        case 'null': {
+          if (currentConfig !== null) {
+            errored = true;
+          }
+
+          break;
+        }
+
+        case 'number': {
+          if (typeof currentConfig !== 'number') {
+            errored = true;
+          }
+
+          break;
+        }
+
+        case 'string': {
+          if (typeof currentConfig !== 'string') {
+            errored = true;
+          }
+
+          break;
+        }
+
+        default: {
+          throw new CliError(ErrorMessage.GuruMeditation());
+          break;
+        }
+      }
+
+      if (errored) {
+        throw new CliError(
+          ErrorMessage.InvalidConfigFile(
+            fullKey,
+            configPath,
+            `expected value to be of type "${validator}"; saw instead: "${typeof currentConfig}"`
+          )
+        );
+      }
     }
 
     return currentConfig;
   }
-} as ConfigureExecutionContext;
+} as ConfigureExecutionContext<GlobalExecutionContext>;
 
 export const configureErrorHandlingEpilogue =
-  makeStandardConfigureErrorHandlingEpilogue() as ConfigureErrorHandlingEpilogue;
+  makeStandardConfigureErrorHandlingEpilogue() as ConfigureErrorHandlingEpilogue<GlobalExecutionContext>;
+
+const isPlainObject = (o: unknown): o is object =>
+  !!o && typeof o === 'object' && !Array.isArray(o);
