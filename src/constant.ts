@@ -1,7 +1,3 @@
-import { homedir } from 'node:os';
-
-import { toAbsolutePath } from '@-xun/fs';
-
 /**
  * The name of the command line interface.
  */
@@ -10,17 +6,17 @@ export const globalCliName = 'bdpa-cron';
 /**
  * The CLI-wide namespace that appears in logger output.
  */
-export const globalLoggerNamespace = globalCliName;
+export const globalLoggerNamespace = 'bcron';
 
 /**
  * The CLI-wide namespace that appears in debugger output.
  */
-export const globalDebuggerNamespace = globalCliName;
+export const globalDebuggerNamespace = globalLoggerNamespace;
 
 /**
- * Where the current user's configuration file can be found if it exists.
+ * The unique string used in this CLI's config directory.
  */
-export const configFile = toAbsolutePath(homedir(), '.config', 'nhscc-bdpa-cron.json');
+export const configDirNameComponent = 'bdpa-cron';
 
 /**
  * The HSCC MongoDB Atlas APIs organized by problem statement name.
@@ -37,7 +33,7 @@ export const TargetProblem = {
   Drive: 'drive',
   Qoverflow: 'qoverflow',
   Blogpress: 'blogpress',
-  Inbdpa: 'ganymede',
+  Inbdpa: 'inbdpa',
   ElectionsIrv: 'elections-irv',
   ElectionsCpl: 'elections-cpl',
   Bdpaoverflow: 'bdpaoverflow'
@@ -84,6 +80,11 @@ export const TargetDatabase = {
 } as const;
 
 export type TargetDatabase = typeof TargetDatabase;
+
+/**
+ * @see {@link TargetProblem}
+ */
+export type ActualTargetProblem = Exclude<TargetProblem[keyof TargetProblem], 'all'>;
 
 /**
  * @see {@link allActualTargetProblems}

@@ -1,4 +1,6 @@
-import { checkArrayNotEmpty } from '@-xun/cli';
+import { readFile } from 'node:fs/promises';
+
+import { checkArrayNotEmpty, CliError } from '@-xun/cli';
 
 import {
   makeStandardConfigureErrorHandlingEpilogue,
@@ -10,12 +12,15 @@ import { createDebugLogger, createGenericLogger } from 'rejoinder';
 import {
   allActualTargetProblems,
   allInputTargets,
+  configDirNameComponent,
   globalDebuggerNamespace,
   globalLoggerNamespace,
   TargetDatabase,
   TargetProblem,
   TargetYear
 } from 'universe:constant.ts';
+
+import { ErrorMessage } from 'universe:error.ts';
 
 import type {
   BfeBuilderObject,
@@ -25,10 +30,11 @@ import type {
 
 import type {
   StandardCommonCliArguments,
-  StandardExecutionContext
+  StandardExecutionContextWithListr2
 } from '@-xun/cli/extensions';
 
-import type { Arrayable } from 'type-fest';
+import type { Arrayable, JsonObject, JsonValue, LiteralUnion } from 'type-fest';
+import type { ActualTargetProblem } from 'universe:constant.ts';
 
 import type {
   // ? Used in documentation
@@ -41,9 +47,30 @@ const rootDebugLogger = createDebugLogger({ namespace: globalDebuggerNamespace }
 
 export { $executionContext } from '@-xun/cli';
 
-export type GlobalExecutionContext = StandardExecutionContext /* & {
-  * See also: configureExecutionContext
-} */;
+/**
+ * The expected shape of an incoming JSON configuration object.
+ */
+export type Configuration = Record<keyof TargetProblem, JsonObject>;
+
+export type GlobalExecutionContext = StandardExecutionContextWithListr2 & {
+  startupError: Error | undefined;
+  /**
+   * Call this function to grab a value from global configuration. Nested `key`
+   * is supported (e.g. `a.b.c`). Use `validator` to validate the value. Pass a
+   * custom function to `validator` that returns `true` if valid, or false / an
+   * error string if invalid.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
+  getConfig: <T>(
+    key: string,
+    validator:
+      | 'string'
+      | 'number'
+      | 'boolean'
+      | 'null'
+      | ((value: unknown) => boolean | string)
+  ) => T;
+};
 
 /**
  * These properties will be available in the `argv` object of any command that
@@ -55,8 +82,19 @@ export type GlobalExecutionContext = StandardExecutionContext /* & {
  * @see {@link StandardCommonCliArguments}
  */
 export type GlobalCliArguments = StandardCommonCliArguments & {
-  targets: TargetProblem[];
+  targets: ActualTargetProblem[];
 };
+
+/**
+ * Returns a well-known configuration path.
+ */
+export async function getWellKnownConfigPath() {
+  const { config: configDirPath } = (await import('env-paths')).default(
+    configDirNameComponent
+  );
+
+  return `${configDirPath}/secrets.json`;
+}
 
 /**
  * This {@link BfeBuilderObject} instance describes the CLI arguments available
@@ -80,9 +118,9 @@ export const globalCliArguments = {
   targets: {
     alias: 'target',
     array: true,
+    demandThisOption: true,
     choices: allInputTargets,
-    default: allActualTargetProblems,
-    defaultDescription: TargetProblem.All,
+    description: 'One or more APIs against which tasks are run',
     check: checkArrayNotEmpty('--targets'),
     coerce(targets: Arrayable<(typeof allInputTargets)[number]>) {
       return Array.from(
@@ -106,20 +144,86 @@ export const globalCliArguments = {
       );
     }
   }
-} satisfies BfeBuilderObject<Record<string, unknown>, StandardExecutionContext>;
+} satisfies BfeBuilderObject<Record<string, unknown>, GlobalExecutionContext>;
 
 export const configureExecutionContext = async function (context) {
   const standardContextFactory = await makeStandardConfigureExecutionContext({
     rootGenericLogger,
-    rootDebugLogger
+    rootDebugLogger,
+    withListr2Support: true
   });
 
-  const standardContext = await standardContextFactory(context);
+  let startupError = undefined as undefined | Error;
+
+  const [standardContext, [configPath, config]] = await Promise.all([
+    standardContextFactory(context),
+    getWellKnownConfigPath().then(async (path) => {
+      try {
+        return [path, JSON.parse(await readFile(path, 'utf8')) as JsonValue] as const;
+      } catch (error) {
+        startupError = new CliError(ErrorMessage.UnreadableConfigFile(path), {
+          cause: error
+        });
+        return [path, {} as JsonValue] as const;
+      }
+    })
+  ] as const);
 
   return {
-    ...standardContext
-    // * see also: GlobalExecutionContext
+    ...standardContext,
+    startupError,
+    getConfig
   };
+
+  function getConfig(
+    key: string,
+    validator: LiteralUnion<Parameters<GlobalExecutionContext['getConfig']>[1], string>,
+    currentConfig: unknown = config
+  ) {
+    const [firstKey, ...remainingKeys] = key.split('.');
+    currentConfig =
+      firstKey &&
+      currentConfig &&
+      typeof currentConfig === 'object' &&
+      firstKey in currentConfig
+        ? currentConfig[firstKey as keyof typeof currentConfig]
+        : currentConfig;
+
+    if (remainingKeys.length) {
+      return getConfig(remainingKeys.join('.'), validator, currentConfig);
+    }
+
+    if (typeof validator === 'function') {
+      const isValid = validator(currentConfig);
+
+      if (isValid !== true) {
+        throw new CliError(
+          ErrorMessage.InvalidConfigFile(
+            firstKey!,
+            configPath,
+            typeof isValid === 'string' ? isValid : undefined
+          )
+        );
+      }
+    } else if (
+      (validator === 'boolean' && typeof currentConfig !== 'boolean') ||
+      (validator === 'null' && currentConfig !== null) ||
+      (validator === 'number' && typeof currentConfig !== 'number') ||
+      (validator === 'string' && typeof currentConfig !== 'string')
+    ) {
+      throw new CliError(
+        ErrorMessage.InvalidConfigFile(
+          firstKey!,
+          configPath,
+          `expected value to be of type "${validator}"; saw instead: "${typeof currentConfig}"`
+        )
+      );
+    } else {
+      throw new CliError(ErrorMessage.GuruMeditation());
+    }
+
+    return currentConfig;
+  }
 } as ConfigureExecutionContext;
 
 export const configureErrorHandlingEpilogue =
