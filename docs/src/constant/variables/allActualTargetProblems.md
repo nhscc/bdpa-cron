@@ -6,9 +6,9 @@
 
 # Variable: allActualTargetProblems
 
-> `const` **allActualTargetProblems**: (`"elections"` \| `"airports"` \| `"barker"` \| `"ghostmeme"` \| `"drive"` \| `"qoverflow"` \| `"blogpress"` \| `"ganymede"` \| `"elections-irv"` \| `"elections-cpl"` \| `"bdpaoverflow"`)[]
+> `const` **allActualTargetProblems**: (`"elections"` \| `"airports"` \| `"barker"` \| `"ghostmeme"` \| `"drive"` \| `"qoverflow"` \| `"blogpress"` \| `"inbdpa"` \| `"elections-irv"` \| `"elections-cpl"` \| `"bdpaoverflow"`)[]
 
-Defined in: [src/constant.ts:95](https://github.com/nhscc/bdpa-cron/blob/fb94d84b32201c9d8dab385121a53d5c0ecc3177/src/constant.ts#L95)
+Defined in: [src/constant.ts:105](https://github.com/nhscc/bdpa-cron/blob/8ad58c8c8508bf539936ccdd28c6f77ce4493fea/src/constant.ts#L105)
 
 ## See
 

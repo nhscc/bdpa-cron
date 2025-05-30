@@ -8,6 +8,7 @@
 
 ## Type Aliases
 
+- [Configuration](type-aliases/Configuration.md)
 - [GlobalCliArguments](type-aliases/GlobalCliArguments.md)
 - [GlobalExecutionContext](type-aliases/GlobalExecutionContext.md)
 
@@ -20,3 +21,4 @@
 ## Functions
 
 - [configureExecutionContext](functions/configureExecutionContext.md)
+- [getWellKnownConfigPath](functions/getWellKnownConfigPath.md)

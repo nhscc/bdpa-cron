@@ -8,7 +8,7 @@
 
 > **GlobalCliArguments** = `StandardCommonCliArguments` & `object`
 
-Defined in: [src/configure.ts:57](https://github.com/nhscc/bdpa-cron/blob/fb94d84b32201c9d8dab385121a53d5c0ecc3177/src/configure.ts#L57)
+Defined in: [src/configure.ts:84](https://github.com/nhscc/bdpa-cron/blob/8ad58c8c8508bf539936ccdd28c6f77ce4493fea/src/configure.ts#L84)
 
 These properties will be available in the `argv` object of any command that
 uses [withGlobalBuilder](../../util/functions/withGlobalBuilder.md) to construct its `builder`.
@@ -20,7 +20,7 @@ keys may differ slightly (e.g. hyphens may be elided in favor of camelCase).
 
 ### targets
 
-> **targets**: [`TargetProblem`](../../constant/type-aliases/TargetProblem.md)[]
+> **targets**: [`ActualTargetProblem`](../../constant/type-aliases/ActualTargetProblem.md)[]
 
 ## See
 

@@ -6,16 +6,16 @@
 
 # Function: default()
 
-> **default**(`__namedParameters`): `RootConfiguration`\<[`CustomCliArguments`](../type-aliases/CustomCliArguments.md), [`GlobalExecutionContext`](../../configure/type-aliases/GlobalExecutionContext.md)\>
+> **default**(`__namedParameters`): `Promise`\<`Partial`\<`Partial`\<`Configuration`\<[`CustomCliArguments`](../type-aliases/CustomCliArguments.md), [`GlobalExecutionContext`](../../configure/type-aliases/GlobalExecutionContext.md)\>\>\>\>
 
-Defined in: [src/commands/index.ts:27](https://github.com/nhscc/bdpa-cron/blob/fb94d84b32201c9d8dab385121a53d5c0ecc3177/src/commands/index.ts#L27)
+Defined in: [src/commands/index.ts:48](https://github.com/nhscc/bdpa-cron/blob/8ad58c8c8508bf539936ccdd28c6f77ce4493fea/src/commands/index.ts#L48)
 
 ## Parameters
 
 ### \_\_namedParameters
 
-`AsStrictExecutionContext`\<`StandardExecutionContext`\>
+`AsStrictExecutionContext`\<[`GlobalExecutionContext`](../../configure/type-aliases/GlobalExecutionContext.md)\>
 
 ## Returns
 
-`RootConfiguration`\<[`CustomCliArguments`](../type-aliases/CustomCliArguments.md), [`GlobalExecutionContext`](../../configure/type-aliases/GlobalExecutionContext.md)\>
+`Promise`\<`Partial`\<`Partial`\<`Configuration`\<[`CustomCliArguments`](../type-aliases/CustomCliArguments.md), [`GlobalExecutionContext`](../../configure/type-aliases/GlobalExecutionContext.md)\>\>\>\>

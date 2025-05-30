@@ -6,9 +6,9 @@
 
 # Variable: allInputTargets
 
-> `const` **allInputTargets**: (`"all"` \| `"elections"` \| `"airports"` \| `"barker"` \| `"ghostmeme"` \| `"drive"` \| `"qoverflow"` \| `"blogpress"` \| `"ganymede"` \| `"elections-irv"` \| `"elections-cpl"` \| `"bdpaoverflow"` \| `2019` \| `2020` \| `2021` \| `2022` \| `2023` \| `2024` \| `2025` \| `"mars"` \| `"neptune"` \| `"saturn"` \| `"pluto"` \| `"venus"` \| `"jupiter"` \| `"uranus"` \| `"callisto"` \| `"io"` \| `"europa"`)[]
+> `const` **allInputTargets**: (`"all"` \| `"elections"` \| `"airports"` \| `"barker"` \| `"ghostmeme"` \| `"drive"` \| `"qoverflow"` \| `"blogpress"` \| `"inbdpa"` \| `"elections-irv"` \| `"elections-cpl"` \| `"bdpaoverflow"` \| `2019` \| `2020` \| `2021` \| `2022` \| `2023` \| `2024` \| `2025` \| `"mars"` \| `"neptune"` \| `"saturn"` \| `"pluto"` \| `"venus"` \| `"jupiter"` \| `"uranus"` \| `"ganymede"` \| `"callisto"` \| `"io"` \| `"europa"`)[]
 
-Defined in: [src/constant.ts:82](https://github.com/nhscc/bdpa-cron/blob/fb94d84b32201c9d8dab385121a53d5c0ecc3177/src/constant.ts#L82)
+Defined in: [src/constant.ts:92](https://github.com/nhscc/bdpa-cron/blob/8ad58c8c8508bf539936ccdd28c6f77ce4493fea/src/constant.ts#L92)
 
 ## See
 

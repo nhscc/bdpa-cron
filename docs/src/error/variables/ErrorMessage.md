@@ -8,7 +8,7 @@
 
 > `const` **ErrorMessage**: `object`
 
-Defined in: [src/error.ts:7](https://github.com/nhscc/bdpa-cron/blob/fb94d84b32201c9d8dab385121a53d5c0ecc3177/src/error.ts#L7)
+Defined in: [src/error.ts:8](https://github.com/nhscc/bdpa-cron/blob/8ad58c8c8508bf539936ccdd28c6f77ce4493fea/src/error.ts#L8)
 
 A collection of possible error and warning messages.
 
@@ -67,6 +67,50 @@ A collection of possible error and warning messages.
 ##### args
 
 `string`[]
+
+#### Returns
+
+`string`
+
+### InvalidConfigFile()
+
+> **InvalidConfigFile**(`key`, `path`, `problem`): `string`
+
+#### Parameters
+
+##### key
+
+`string`
+
+##### path
+
+`string`
+
+##### problem
+
+`undefined` | `string`
+
+#### Returns
+
+`string`
+
+### UnimplementedTasks()
+
+> **UnimplementedTasks**(): `string`
+
+#### Returns
+
+`string`
+
+### UnreadableConfigFile()
+
+> **UnreadableConfigFile**(`path`): `string`
+
+#### Parameters
+
+##### path
+
+`string`
 
 #### Returns
 

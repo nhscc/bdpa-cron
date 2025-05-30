@@ -8,6 +8,7 @@
 
 ## Type Aliases
 
+- [ActualTargetProblem](type-aliases/ActualTargetProblem.md)
 - [TargetDatabase](type-aliases/TargetDatabase.md)
 - [TargetProblem](type-aliases/TargetProblem.md)
 - [TargetYear](type-aliases/TargetYear.md)
@@ -16,6 +17,7 @@
 
 - [allActualTargetProblems](variables/allActualTargetProblems.md)
 - [allInputTargets](variables/allInputTargets.md)
+- [configDirNameComponent](variables/configDirNameComponent.md)
 - [globalCliName](variables/globalCliName.md)
 - [globalDebuggerNamespace](variables/globalDebuggerNamespace.md)
 - [globalLoggerNamespace](variables/globalLoggerNamespace.md)
